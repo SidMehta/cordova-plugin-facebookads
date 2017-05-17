@@ -41,8 +41,8 @@
 			  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
         </config-file>
           
-        <framework src="com.android.support:support-v4:+" />
-<!--         <framework src="com.google.android.gms:play-services-ads:+"/> -->
+<!--         <framework src="com.android.support:support-v4:+" /> -->
+        <framework src="com.google.android.gms:play-services-ads:+"/>
         <framework src="com.facebook.android:audience-network-sdk:4.21.+"/>
      </platform>
      
