@@ -158,13 +158,14 @@ public class FacebookAdPlugin extends GenericAdPlugin {
             	FlexNativeAd unit = new FlexNativeAd();
             	unit.adId = adId;
             	unit.x = unit.y = 0;
-            	unit.w = unit.h = 80;
+				unit.w = unit.h = 4;
             	
             	unit.view = new View(getActivity());
 				unit.tracking = new View(getActivity());
-            	layout.addView(unit.view, new RelativeLayout.LayoutParams(unit.w, unit.h));
 				layout.addView(unit.tracking, new RelativeLayout.LayoutParams(unit.w, unit.h));
+				layout.addView(unit.view, new RelativeLayout.LayoutParams(unit.w, unit.h));
             	if(isTesting) {
+					unit.tracking.setBackgroundColor(0x30FF0000);
                 	unit.view.setBackgroundColor(0x3000FF00);
             	}
 
@@ -223,6 +224,11 @@ public class FacebookAdPlugin extends GenericAdPlugin {
             	    public void onAdClicked(Ad ad) {
             	    	fireAdEvent(EVENT_AD_LEAVEAPP, ADTYPE_NATIVE);
             	    }
+
+				    @Override
+				    public void onLoggingImpression(Ad ad) {
+						// Ad impression logged callback
+				    }
             	});
             	
             	nativeAds.put(adId, unit);
@@ -285,7 +291,10 @@ public class FacebookAdPlugin extends GenericAdPlugin {
 					jsonData = json.toString();
 				} catch(Exception e) {
 				}
-            	unit.ad.registerViewForInteraction(unit.tracking);
+                if (unit.ad != null) {
+                  unit.ad.unregisterView();
+                  unit.ad.registerViewForInteraction(unit.tracking);
+                }
 				fireEvent(__getProductShortName(), EVENT_AD_LOADED, jsonData);
         		break;
         	}
@@ -343,6 +352,12 @@ public class FacebookAdPlugin extends GenericAdPlugin {
 	        			unit.view.setRight(unit.x+unit.w);
 	        			unit.view.setBottom(unit.y+unit.h);
 	        		}
+					if(unit.tracking != null) {
+						unit.tracking.setLeft(unit.x);
+						unit.tracking.setTop(unit.y);
+						unit.tracking.setRight(unit.x+unit.w);
+						unit.tracking.setBottom(unit.y+unit.h);
+					}
 	            }
 		    });
 		}
@@ -398,6 +413,11 @@ public class FacebookAdPlugin extends GenericAdPlugin {
     		public void onError(Ad arg0, AdError arg1) {
             	fireAdErrorEvent(EVENT_AD_FAILLOAD, arg1.getErrorCode(), arg1.getErrorMessage(), ADTYPE_BANNER);
     		}
+
+			@Override
+			public void onLoggingImpression(Ad ad) {
+				// Ad impression logged callback
+			}
         });
         return ad;
 	}
@@ -484,7 +504,12 @@ public class FacebookAdPlugin extends GenericAdPlugin {
     		public void onInterstitialDisplayed(Ad arg0) {
     			fireAdEvent(EVENT_AD_PRESENT, ADTYPE_INTERSTITIAL);
     		}
-        });
+
+			@Override
+			public void onLoggingImpression(Ad ad) {
+				// Ad impression logged callback
+			}
+		});
         return ad;
 	}
 
